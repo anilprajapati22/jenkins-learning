@@ -5,22 +5,31 @@ pipeline {
     }
 
     stages {
+            stage('Code-Fetch') {
+            steps {
+                echo "code fetching from git"
+                git 'https://github.com/anilprajapati22/jenkins_docker.git'
+            }
+        }
+        
         stage('Build') {
             steps {
                 echo "Building the image"
-                docker build -t flask-sgn .
+                sh "pwd"
+                sh "ls"
+                sh 'docker build -t flask-sgn .'
             }
         }
         stage('Test') {
             steps {
-                docker run -d --name flask-server flask-sgn
-                docker logs flask-server
+                sh 'docker run -d --name flask-server flask-sgn'
+                sh 'docker logs flask-server'
             }
         }
         stage('cleanup') {
             steps {
                 echo "Clear docker container"
-                docker rm -f flask-server
+                sh 'docker rm -f flask-server'
             }
         }        
     }

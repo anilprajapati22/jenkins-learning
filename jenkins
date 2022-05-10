@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    environment { 
+        sgnenv = "Hello this is the value of env variable"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building the image"
+                docker build -t flask-sgn .
+            }
+        }
+        stage('Test') {
+            steps {
+                docker run -d --name flask-server flask-sgn
+                docker logs flask-server
+            }
+        }
+        stage('cleanup') {
+            steps {
+                echo "Clear docker container"
+                docker rm -f flask-server
+            }
+        }        
+    }
+}

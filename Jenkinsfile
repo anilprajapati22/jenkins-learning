@@ -27,25 +27,26 @@ pipeline {
                 sh 'docker build -t anilprajapati18/flask-sgn .'
             }
         }
-        stage('Test') {
-            steps {
-                sh 'docker run -d --name flask-server anilprajapati18/flask-sgn'
-                sh 'docker logs flask-server'
-            }
-        }
-
         stage('Push-on-Dockerhub') {
             steps {
                 echo "pushing on docker hub"
                 sh 'docker push anilprajapati18/flask-sgn'
             }
         }
-
-        stage('cleanup') {
+        stage('Deploy') {
             steps {
-                echo "Clear docker container"
-                sh 'docker rm -f flask-server'
+                sh 'docker rm -f flask-server || true'
+                sh 'docker run -d -p 80:5000 --name flask-server anilprajapati18/flask-sgn'
+                sh 'docker logs flask-server'
             }
-        }        
+        }
+
+
+        // stage('cleanup') {
+        //     steps {
+        //         echo "Clear docker container"
+        //         sh 'docker rm -f flask-server'
+        //     }
+        // }        
     }
 }

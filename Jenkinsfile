@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Push-on-Dockerhub') {
             steps {
                 echo "pushing on docker hub"
                 sh 'docker push anilprajapati18/flask-sgn'

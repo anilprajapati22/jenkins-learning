@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment { 
-        sgnenv = "Hello this is the value of env variable"
+        sgnenv = "Hello this is the value of env variable sgnons"
         DOCKERHUB_CREDENTIALS=credentials('dockerhub')
     }
 

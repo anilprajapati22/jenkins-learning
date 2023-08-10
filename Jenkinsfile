@@ -1,52 +1,22 @@
 pipeline {
     agent any
-    environment { 
-        sgnenv = "Hello this is the value of env variable sgnons"
-        DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+    tools {
+        go 'go-1.19' // Comes from the jenkins global config
+    }
+    environment {
+        ENV = "${env.BRANCH_NAME == 'master' ? 'PROD' : 'DEV'}" // Define the ENV based on the branch name
     }
 
     stages {
-            stage('Code-Fetch') {
-            steps {
-                echo "code fetching from git"
-                git 'https://github.com/anilprajapati22/jenkins_docker.git'
-            }
-        }
-        stage('Login') {
-
-			steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-			}
-		}
-        
         stage('Build') {
             steps {
-                echo "Building the image"
-                sh "pwd"
-                sh "ls"
-                sh 'docker build -t anilprajapati18/flask-sgn .'
+                sh 'bash scripts/build.sh' // Run the build
             }
         }
-        stage('Push-on-Dockerhub') {
+        stage('Test') {
             steps {
-                echo "pushing on docker hub"
-                sh 'docker push anilprajapati18/flask-sgn'
+                sh 'bash scripts/test.sh' // Run the test
             }
         }
-        stage('Deploy') {
-            steps {
-                sh 'docker rm -f flask-server || true'
-                sh 'docker run -d -p 80:5000 --name flask-server anilprajapati18/flask-sgn'
-                sh 'docker logs flask-server'
-            }
-        }
-
-
-        // stage('cleanup') {
-        //     steps {
-        //         echo "Clear docker container"
-        //         sh 'docker rm -f flask-server'
-        //     }
-        // }        
     }
 }
